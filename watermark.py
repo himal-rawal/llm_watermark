@@ -18,7 +18,7 @@ class Watermark:
                 result.append(char)
         return "".join(result)
 # Watermark by zerowidth
-    def _add_zerowidth_watermark(text,self):
+    def _add_zerowidth_watermark(self,text):
         # For now we will append zero width character at the beginning and at the end
         # of the text but later we will add our own signatiure inside those text.
         # We will encode our secret text in zero width character and insert it inside
@@ -32,7 +32,9 @@ class Watermark:
         return self.zw_char + text + self.zw_char
 #  
     def add_watermark(self, text):
-        return 
+        homoglyph_text = self._add_homoglyph_watermark(text)
+        zerowidth_text = self._add_zerowidth_watermark(homoglyph_text)
+        return zerowidth_text
 
     
     def detect_homoglyph_watermark(self,text):
@@ -41,7 +43,7 @@ class Watermark:
             if char in glyph_words:
                 return True
         return False
-    
-    def detect_zerowidth_watermark(text,self):
+
+    def detect_zerowidth_watermark(self,text):
        hasWatermark=text.startswith(self.zw_char) and text.endswith(self.zw_char)
        return hasWatermark
