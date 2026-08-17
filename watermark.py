@@ -36,6 +36,9 @@ class Watermark:
         zerowidth_text = self._add_zerowidth_watermark(homoglyph_text)
         return zerowidth_text
 
+    def detect_watermark(self, text):
+        hasWatermark=self.detect_zerowidth_watermark(text) or self.detect_homoglyph_watermark(text)
+        return hasWatermark
     
     def detect_homoglyph_watermark(self,text):
         glyph_words=set(self.replacebale_char_glymphs.values())
