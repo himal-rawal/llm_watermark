@@ -1,5 +1,5 @@
+from dotenv import load_dotenv
 class Watermark:
-
     replacebale_char_glymphs={
     "a": "а",
     "o": "о",
@@ -7,6 +7,8 @@ class Watermark:
     "w": "ԝ"
 }
     zw_char="\u200b"
+    zw_char_nonjoiner="\u200c"
+    signature="Himal"
 # Watermark by Homoglyph
     def _add_homoglyph_watermark(self,text):
         result=[]
@@ -19,18 +21,27 @@ class Watermark:
         return "".join(result)
 # Watermark by zerowidth
     def _add_zerowidth_watermark(self,text):
-        # For now we will append zero width character at the beginning and at the end
-        # of the text but later we will add our own signatiure inside those text.
-        # We will encode our secret text in zero width character and insert it inside
-        # real text .ie if Himal  is the signature we will encode it with utf8  to 
-        # values 72,105 basically we will convert unicode characters to bytes then we convert
-        # those bytes to 8 bit binary digit and map with zero width space and zero width
-        # non joiners. we can assign zero width space to 1 and another to 0  and then  
-        # insert  the output signature to original text
-         
-       
-        return self.zw_char + text + self.zw_char
-#  
+        signature_bytes = self.signature.encode('utf-8')
+        signtature_bits= self.bytes_to_bits(signature_bytes)
+        watermark=self._encode_bits(signtature_bits)
+        return watermark + text + watermark
+
+    def bytes_to_bits(self,bytes):
+        result=[]
+        for byte in bytes:
+            result.append(format(byte,'08b'))
+        return "".join(result)
+
+    def _encode_bits(self,bits):
+        parts=[]
+        for bit in bits:
+            if bit==1:
+                parts.append(self.zw_char)
+            else:
+                parts.append(self.zw_char_nonjoiner)
+        return "".join(parts)
+
+# Adding watermark
     def add_watermark(self, text):
         homoglyph_text = self._add_homoglyph_watermark(text)
         zerowidth_text = self._add_zerowidth_watermark(homoglyph_text)
@@ -48,5 +59,8 @@ class Watermark:
         return False
 
     def detect_zerowidth_watermark(self,text):
-       hasWatermark=text.startswith(self.zw_char) and text.endswith(self.zw_char)
-       return hasWatermark
+        if not text:
+            return False
+        signature_bits = self.bytes_to_bits(self.signature.encode("utf-8"))
+        expected_marker = self._encode_bits(signature_bits)
+        return text.startswith(expected_marker) and text.endswith(expected_marker)
