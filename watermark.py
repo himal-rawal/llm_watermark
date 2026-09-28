@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 class Watermark:
     replacebale_char_glymphs={
     "a": "а",
@@ -35,7 +34,7 @@ class Watermark:
     def _encode_bits(self,bits):
         parts=[]
         for bit in bits:
-            if bit==1:
+            if bit == "1":
                 parts.append(self.zw_char)
             else:
                 parts.append(self.zw_char_nonjoiner)
