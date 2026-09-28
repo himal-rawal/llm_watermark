@@ -1,6 +1,15 @@
-# AI Watermark API
+#  Watermark 
+In this project I have tried to demonstrate how we can implement watermark in the 
+text.
 
-A Flask API that generates Gemini responses, adds the project watermark, and detects that watermark.
+Scenario: For example I have an app which answers users query. I want to later confirm that this text belongs to my app or is generated through my app. The I can use this watermark system.
+
+Methods:
+In this mainly I have used 2  types of watermark techniques:
+1. Zero Width Character: In this method we  encode a signature and embed it to the beginning and end of the text . Later check if that signature is still there or not.This signature is not displayed to user as it is encoded in zero width character and not visisble
+2. Homoglyph Text: In this method we replace some charcters with homoglyph characters and the differrence in those characters are almost equal to zero. It is hard to separate from unicode characters.
+
+
 
 ## Setup
 
@@ -10,17 +19,17 @@ export API_KEY="your-gemini-api-key"
 python3 app.py
 ```
 
-The server listens on `http://localhost:5000` by default. Set `GEMINI_MODEL` or `PORT` to override the defaults.
-
 ## Generate text
 
 ```bash
 curl -X POST http://localhost:5000/api/generate \
   -H 'Content-Type: application/json' \
-  -d '{"prompt":"Explain photosynthesis in two sentences."}'
+  -d '{"prompt":"Who is Himal"}'
 ```
 
-The response contains the watermarked generated text:
+This response contain watermarked text.
+
+ Output:
 
 ```json
 {"prompt":"...","text":"...","watermarked":true}
@@ -31,13 +40,14 @@ The response contains the watermarked generated text:
 ```bash
 curl -X POST http://localhost:5000/api/detect \
   -H 'Content-Type: application/json' \
-  -d '{"text":"text to inspect"}'
+  -d '{"text":"This is watermarked text"}'
 ```
-
-The response reports the overall result and the matching mechanisms:
+output:
 
 ```json
 {"watermarked":true,"zero_width":true,"homoglyph":false}
 ```
 
-`GET /api/health` returns `{"status":"ok"}` and does not require an AI key.
+## Health
+Status of server. It donot check api key
+`GET /api/health` returns `{"status":"ok"}` 
